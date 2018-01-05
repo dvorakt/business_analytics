@@ -13,8 +13,8 @@ Lab 1: Introduction to R
 * loading data (`read_csv()` function)
 * data frames and variables
 * using a variable from a data frame (the `$` operator)
-* changing variable type
 * plotting a line graph
+* renaming a variable
 
 ### Background reading
 * Chapters [9](http://r4ds.had.co.nz/wrangle-intro.html), [10](http://r4ds.had.co.nz/tibbles.html) and the first two sections of chapter [11](http://r4ds.had.co.nz/data-import.html) in *R for Data Science*
@@ -25,7 +25,7 @@ Let's start a new project. We can call it "ba" for business analytics. Click on 
 
 ### 2. Loading packages
 
-Before we can use any packages we have to 'load' them into our R session. We do that by calling  the `library()` function with the name of the package as the only argumet. 
+Before we can use any packages we have to 'load' them into our R session. We do that by calling  the `library()` function with the name of the package as the only argument. Any package that we want to load needs to be already installed. We need to install a package only once but load it each time we start a new R session.
 
 Let's open a new R Markdown document. R Markdown combines text and R code. R code is enclosed in ![](opening.JPG) and ![](closing.JPG) marks. For example, if we want to load in our `tidyverse` package we type the following:
 
@@ -55,7 +55,7 @@ Data frame (or its type *tibble*) is an object that holds variables and observat
 glimpse(mydata)
 ```
 
-The results tell us that we have over 9 thousand observations and 13 variables. It tells us the variable names, their type and the first few observations. We see that variable Date is a `<date>`, and the rest of the variables are `<dbl>` which means that they are numbers stored with 'double' precision.
+The results tell us that we have over 9 thousand observations and 13 variables. It tells us the variable names, their type and the first few observations. We see that variable Date is a `<date>`, and the rest of the variables are `<dbl>` which means that they are numbers stored with a 'double' precision.
 
 ### 4. Using a variable from a data frame
 
@@ -67,8 +67,8 @@ summary(mydata$Close)
 
 
 ### IN-CLASS EXERCISE
-1. Load in data on the results of the 2016 NHL season from https://www.dropbox.com/s/krlwr6z38ol6wer/NHLseason2016.csv?raw=1 or from 
-
+1. Load in data on the results of the 2016 NHL season from 
+https://dvorakt.github.io/business_analytics/lab1/NHLseason2016.csv 
 2. How many games were there?
 3. What was the average attendance? 
 4. Did home teams score on average more goals than visiting teams?
@@ -84,27 +84,26 @@ ggplot(data=mydata, aes(x=Date, y=Close)) + geom_line()
 
 ### 6. Renaming variables
 
-Some of the variable in our data frame have inconvenient names (e.g. `Adj. Close` has spaces in its name necessitating the use of `` `` quotes. We can rename the variable using the function `rename()` which takes as its first argument a data frame, and as remaining arguments new variable names set equal to old variable names. The function returns a data frame. Below we overwrite our mydata data frame with a new one that includes renamed variable. 
+Some of the variable in our data frame have inconvenient names (e.g. `Adj. Close` has spaces in its name necessitating the use of quotes). We can rename the variable using the function `rename()` which takes as its first argument a data frame, and as remaining arguments new variable names set equal to old variable names. The function returns a data frame. Below we overwrite our `mydata` data frame with a new one that includes renamed variable. 
 
 ```{r}
 mydata <- rename(mydata, appl=`Adj. Close`)
 ```
 
-
 ### IN-CLASS EXERCISE
-
-1. Plot the density of attendance.
+1. Plot the adjusted closing price of Apple
+2. How is it different from the unadjusted price?
 
 ***
 ***
 ## Exercises
-Write a new R Markdown file that does the analysis and answers the questions below. Knit your R Markdown, print it and bring to class. Don't forget to load `tidyverse` at the beginning of your code.
+Create a new R Markdown file that does the analysis and answers the questions below. Knit your R Markdown into an html, print it and bring to class. Don't forget to load `tidyverse` at the beginning of your code.
 
 1. Download data from quandl on closing stock price of GE. (hint: GE's ticker is GE)  
 2. How many observations are available for GE?  
 3. Rename Adj. Close as `ge`. 
-4. Plot the adjusted closing prices GE over time. Use [this documentation for ggplot2](http://rstudio-pubs-static.s3.amazonaws.com/3364_d1a578f521174152b46b19d0c83cbe7e.html) to add title to your plot.   
-5. Use [the same documentation](http://rstudio-pubs-static.s3.amazonaws.com/3364_d1a578f521174152b46b19d0c83cbe7e.html) to create a new plot that uses logarithmic scale on the y axis. Add pretty labels on the y axis ('breaks' in `ggplot` terminology). E.g. 100,200,400 etc.  
+4. Plot the adjusted closing prices GE over time. Use [this documentation for ggplot2](http://www.cookbook-r.com/Graphs/Titles_(ggplot2)/) to add title to your plot.   
+5. Use [the same documentation](http://www.cookbook-r.com/Graphs/Axes_(ggplot2)/#continuous-axis) to create a new plot that uses logarithmic scale on the y axis. Add pretty labels on the y axis ('breaks' in `ggplot` terminology). E.g. 100,200,400 etc.  
 6. Explain why we see different patterns on the linear versus logarithmic scale plots. (Hint 1: Noting that one is on a logarithmic scale and one is on a linear scale is not a sufficient answer. Hint 2: Think about what the vertical distances between points represent on each of the graphs.)  
 7. What are your overall conclusions from these two plots? In other words, what are the key things you feel can be learned about the behavior of the GE over this time frame?
 
