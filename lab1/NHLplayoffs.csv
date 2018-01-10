@@ -1,0 +1,92 @@
+Date,Visitor,Home,goals_home,goals_visit,length,attendance,note
+2016-04-13,New York Rangers,Pittsburgh Penguins,5,2,2:43,18588,
+2016-04-13,Chicago Blackhawks,St. Louis Blues,1,0,2:50,19241,OT
+2016-04-13,Detroit Red Wings,Tampa Bay Lightning,3,2,2:48,19092,
+2016-04-14,Minnesota Wild,Dallas Stars,4,0,2:37,18532,
+2016-04-14,New York Islanders,Florida Panthers,4,5,2:37,17422,
+2016-04-14,San Jose Sharks,Los Angeles Kings,3,4,2:36,18230,
+2016-04-14,Philadelphia Flyers,Washington Capitals,2,0,2:37,18506,
+2016-04-15,Nashville Predators,Anaheim Ducks,2,3,2:42,17236,
+2016-04-15,New York Islanders,Florida Panthers,3,1,2:39,18373,
+2016-04-15,Chicago Blackhawks,St. Louis Blues,2,3,2:45,19846,
+2016-04-15,Detroit Red Wings,Tampa Bay Lightning,5,2,2:51,19092,
+2016-04-16,Minnesota Wild,Dallas Stars,2,1,2:48,18988,
+2016-04-16,San Jose Sharks,Los Angeles Kings,1,2,2:39,18514,
+2016-04-16,New York Rangers,Pittsburgh Penguins,2,4,2:45,18614,
+2016-04-16,Philadelphia Flyers,Washington Capitals,4,1,2:39,18506,
+2016-04-17,Nashville Predators,Anaheim Ducks,2,3,2:36,17174,
+2016-04-17,St. Louis Blues,Chicago Blackhawks,2,3,2:39,22207,
+2016-04-17,Tampa Bay Lightning,Detroit Red Wings,2,0,2:42,20027,
+2016-04-17,Florida Panthers,New York Islanders,4,3,3:13,15795,OT
+2016-04-18,Dallas Stars,Minnesota Wild,5,3,2:40,19038,
+2016-04-18,Washington Capitals,Philadelphia Flyers,1,6,2:37,19678,
+2016-04-18,Los Angeles Kings,San Jose Sharks,1,2,2:52,17562,OT
+2016-04-19,St. Louis Blues,Chicago Blackhawks,3,4,2:49,22212,
+2016-04-19,Tampa Bay Lightning,Detroit Red Wings,2,3,2:43,20027,
+2016-04-19,Anaheim Ducks,Nashville Predators,0,3,2:34,17204,
+2016-04-19,Pittsburgh Penguins,New York Rangers,1,3,2:30,18006,
+2016-04-20,Dallas Stars,Minnesota Wild,2,3,2:39,19080,
+2016-04-20,Florida Panthers,New York Islanders,1,2,2:40,15795,
+2016-04-20,Washington Capitals,Philadelphia Flyers,2,1,2:41,19692,
+2016-04-20,Los Angeles Kings,San Jose Sharks,3,2,2:34,17562,
+2016-04-21,Anaheim Ducks,Nashville Predators,1,4,2:30,17232,
+2016-04-21,Pittsburgh Penguins,New York Rangers,0,5,2:44,18006,
+2016-04-21,Chicago Blackhawks,St. Louis Blues,3,4,3:43,19956,2OT
+2016-04-21,Detroit Red Wings,Tampa Bay Lightning,1,0,2:34,19092,
+2016-04-22,Minnesota Wild,Dallas Stars,4,5,3:02,18889,OT
+2016-04-22,New York Islanders,Florida Panthers,1,2,4:07,20247,2OT
+2016-04-22,San Jose Sharks,Los Angeles Kings,3,6,2:36,18543,
+2016-04-22,Philadelphia Flyers,Washington Capitals,0,2,2:45,18506,
+2016-04-23,Nashville Predators,Anaheim Ducks,5,2,2:40,17360,
+2016-04-23,St. Louis Blues,Chicago Blackhawks,6,3,2:31,22260,
+2016-04-23,New York Rangers,Pittsburgh Penguins,6,3,2:35,18607,
+2016-04-24,Dallas Stars,Minnesota Wild,4,5,2:47,19310,
+2016-04-24,Florida Panthers,New York Islanders,2,1,3:58,15795,2OT
+2016-04-24,Washington Capitals,Philadelphia Flyers,0,1,2:30,19925,
+2016-04-25,Anaheim Ducks,Nashville Predators,3,1,2:31,17113,
+2016-04-25,Chicago Blackhawks,St. Louis Blues,3,2,2:36,19935,
+2016-04-27,Nashville Predators,Anaheim Ducks,1,2,2:34,17407,
+2016-04-27,New York Islanders,Tampa Bay Lightning,3,5,2:32,19092,
+2016-04-28,Pittsburgh Penguins,Washington Capitals,4,3,3:17,18506,OT
+2016-04-29,St. Louis Blues,Dallas Stars,2,1,2:27,18532,
+2016-04-29,Nashville Predators,San Jose Sharks,5,2,2:34,17026,
+2016-04-30,New York Islanders,Tampa Bay Lightning,4,1,2:36,19092,
+2016-04-30,Pittsburgh Penguins,Washington Capitals,1,2,2:41,18506,
+2016-05-01,St. Louis Blues,Dallas Stars,3,4,3:05,18889,OT
+2016-05-01,Nashville Predators,San Jose Sharks,3,2,2:34,17562,
+2016-05-02,Washington Capitals,Pittsburgh Penguins,3,2,2:37,18601,
+2016-05-03,San Jose Sharks,Nashville Predators,4,1,2:35,17163,
+2016-05-03,Tampa Bay Lightning,New York Islanders,4,5,3:00,15795,OT
+2016-05-03,Dallas Stars,St. Louis Blues,6,1,2:47,19323,
+2016-05-04,Washington Capitals,Pittsburgh Penguins,3,2,3:04,18614,OT
+2016-05-05,San Jose Sharks,Nashville Predators,4,3,4:53,17188,3OT
+2016-05-05,Dallas Stars,St. Louis Blues,2,3,2:57,19770,OT
+2016-05-06,Tampa Bay Lightning,New York Islanders,1,2,3:05,15795,OT
+2016-05-07,St. Louis Blues,Dallas Stars,1,4,2:26,18754,
+2016-05-07,Nashville Predators,San Jose Sharks,5,1,2:33,17562,
+2016-05-07,Pittsburgh Penguins,Washington Capitals,3,1,2:35,18506,
+2016-05-08,New York Islanders,Tampa Bay Lightning,4,0,2:27,19092,
+2016-05-09,San Jose Sharks,Nashville Predators,4,3,2:48,17292,OT
+2016-05-09,Dallas Stars,St. Louis Blues,2,3,2:36,19808,
+2016-05-10,Washington Capitals,Pittsburgh Penguins,4,3,3:08,18650,OT
+2016-05-11,St. Louis Blues,Dallas Stars,1,6,2:29,18532,
+2016-05-12,Nashville Predators,San Jose Sharks,5,0,2:30,17562,
+2016-05-13,Tampa Bay Lightning,Pittsburgh Penguins,1,3,2:36,18554,
+2016-05-15,San Jose Sharks,St. Louis Blues,2,1,2:42,19483,
+2016-05-16,Tampa Bay Lightning,Pittsburgh Penguins,3,2,2:48,18534,OT
+2016-05-17,San Jose Sharks,St. Louis Blues,0,4,2:25,19596,
+2016-05-18,Pittsburgh Penguins,Tampa Bay Lightning,2,4,2:39,19092,
+2016-05-19,St. Louis Blues,San Jose Sharks,3,0,2:22,17562,
+2016-05-20,Pittsburgh Penguins,Tampa Bay Lightning,4,3,2:40,19092,
+2016-05-21,St. Louis Blues,San Jose Sharks,3,6,2:39,17562,
+2016-05-22,Tampa Bay Lightning,Pittsburgh Penguins,3,4,2:54,18648,OT
+2016-05-23,San Jose Sharks,St. Louis Blues,3,6,2:31,19372,
+2016-05-24,Pittsburgh Penguins,Tampa Bay Lightning,2,5,2:41,19092,
+2016-05-25,St. Louis Blues,San Jose Sharks,5,2,2:28,17562,
+2016-05-26,Tampa Bay Lightning,Pittsburgh Penguins,2,1,2:40,18638,
+2016-05-30,San Jose Sharks,Pittsburgh Penguins,3,2,2:31,18596,
+2016-06-01,San Jose Sharks,Pittsburgh Penguins,2,1,2:50,18655,OT
+2016-06-04,Pittsburgh Penguins,San Jose Sharks,3,2,3:06,17562,OT
+2016-06-06,Pittsburgh Penguins,San Jose Sharks,1,3,2:35,17562,
+2016-06-09,San Jose Sharks,Pittsburgh Penguins,2,4,2:40,18680,
+2016-06-12,Pittsburgh Penguins,San Jose Sharks,1,3,2:25,17562,
