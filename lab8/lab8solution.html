@@ -231,7 +231,7 @@ pred &lt;- knn(train_knn, test_knn, train$status, k=5)</code></pre>
 <li>How well are we predicting bad loans? What percentage of bad loans were we able to correctly predict?</li>
 </ol>
 <p>Of the 1,255 bad loans we predicted only 66 to be bad. That is only 5%, or put differently 95% of bad loans went undetected.</p>
-<ol start="8" style="list-style-type: decimal">
+<ol start="7" style="list-style-type: decimal">
 <li>Suppose you change <em>k</em> from 5 to 200. What happens to your predictions? Can you explain why?</li>
 </ol>
 <pre class="r"><code>pred &lt;- knn(train_knn, test_knn, train$status, k=200)

@@ -121,67 +121,198 @@ $(document).ready(function () {
 </div>
 
 
-<div id="lab-7-solutions" class="section level3">
-<h3>Lab 7 Solutions</h3>
+<div id="lab-9-solution" class="section level1">
+<h1>Lab 9 Solution</h1>
 <ol style="list-style-type: decimal">
-<li>Make a <em>knn</em> prediction for the last 17 regular season games using only <code>cumwins_net</code> as a predictor. Are you predictions more or less accurate than when we used<code>cumwins_home</code> and <code>cum_wins_visit</code>?</li>
+<li>Let’s load the Titanic training data.</li>
 </ol>
 <pre class="r"><code>library(tidyverse)
-library(class)
-library(descr)
-nhl2 &lt;- read_csv(&quot;nhl with cum wins.csv&quot;)
-nhl_train &lt;- nhl2 %&gt;% filter(Date &lt; as.Date(&quot;2016-04-09&quot;)) 
-nhl_test &lt;- nhl2 %&gt;% filter(Date &gt;= as.Date(&quot;2016-04-09&quot;)) 
-set.seed(364)
-win_pred &lt;- knn(select(nhl_train, cumwins_net), 
-            select(nhl_test, cumwins_net), nhl_train$homewin, k=3)
-crosstab(nhl_test$homewin, win_pred, prop.t = TRUE, plot=FALSE)</code></pre>
-<pre><code>##    Cell Contents 
-## |-------------------------|
-## |                   Count | 
-## |           Total Percent | 
-## |-------------------------|
-## 
-## =========================================
-##                     win_pred
-## nhl_test$homewin        0       1   Total
-## -----------------------------------------
-## 0                      2       6       8 
-##                     11.8%   35.3%        
-## -----------------------------------------
-## 1                      2       7       9 
-##                     11.8%   41.2%        
-## -----------------------------------------
-## Total                  4      13      17 
-## =========================================</code></pre>
-<p>We have only 53% accuracy, which is a bit lower than when we used both <code>cumwins_home</code> and <code>cumwins_visit</code>.</p>
+library(stargazer)
+data &lt;- read_csv(&quot;titanic_train.csv&quot;)</code></pre>
 <ol start="2" style="list-style-type: decimal">
-<li>Some may argue that using the cummulative wins or losses in the first few games of the season are too noisy and should not be used to train the model. Use only data from after December 15 to train your model and predict the last 17 games using <code>cumwins_home</code> and <code>cum_wins_visit</code> as predictors. Are your predictions more or less accurate?</li>
+<li>What are the odds of surviving the shipwreck?</li>
 </ol>
-<pre class="r"><code>nhl_train &lt;- nhl2 %&gt;% filter(Date &lt; as.Date(&quot;2016-04-09&quot;) &amp; Date &gt; as.Date(&quot;2015-12-15&quot;))
-set.seed(364)
-win_pred &lt;- knn(select(nhl_train, cumwins_home, cumwins_visit), 
-            select(nhl_test, cumwins_home, cumwins_visit), nhl_train$homewin, k=3)
-crosstab(nhl_test$homewin, win_pred, prop.t = TRUE, plot=FALSE)</code></pre>
-<pre><code>##    Cell Contents 
-## |-------------------------|
-## |                   Count | 
-## |           Total Percent | 
-## |-------------------------|
+<pre class="r"><code>prop.table(table(data$Survived))</code></pre>
+<pre><code>## 
+##         0         1 
+## 0.6161616 0.3838384</code></pre>
+<p>We know the probability of survival is 0.38 so the odds are 0.38/0.62 which is about 0.61.</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Using the logit model, estimate how much lower are the odds of survival for men relative to women?</li>
+</ol>
+<pre class="r"><code>l1 &lt;- glm(Survived ~ Sex, data=data, family=&quot;binomial&quot;)
+summary(l1)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Survived ~ Sex, family = &quot;binomial&quot;, data = data)
 ## 
-## =========================================
-##                     win_pred
-## nhl_test$homewin        0       1   Total
-## -----------------------------------------
-## 0                      5       3       8 
-##                     29.4%   17.6%        
-## -----------------------------------------
-## 1                      3       6       9 
-##                     17.6%   35.3%        
-## -----------------------------------------
-## Total                  8       9      17 
-## =========================================</code></pre>
-<p>Using a smaller training data set, we achieved 58.8% accuracy which is lower than what we had when we used the entire season.</p>
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.6462  -0.6471  -0.6471   0.7725   1.8256  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)   1.0566     0.1290   8.191 2.58e-16 ***
+## Sexmale      -2.5137     0.1672 -15.036  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1186.7  on 890  degrees of freedom
+## Residual deviance:  917.8  on 889  degrees of freedom
+## AIC: 921.8
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>round(exp(coef(l1)),2)</code></pre>
+<pre><code>## (Intercept)     Sexmale 
+##        2.88        0.08</code></pre>
+<p>Men’s odds are 92% lower.</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Controlling for gender, does age have a statistically significant effect on the odds of survival? If so, what is the magnitude of that effect?</li>
+</ol>
+<pre class="r"><code>l1 &lt;- glm(Survived ~ Sex + Age, data=data, family=&quot;binomial&quot;)
+summary(l1)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Survived ~ Sex + Age, family = &quot;binomial&quot;, data = data)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.7405  -0.6885  -0.6558   0.7533   1.8989  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  1.277273   0.230169   5.549 2.87e-08 ***
+## Sexmale     -2.465920   0.185384 -13.302  &lt; 2e-16 ***
+## Age         -0.005426   0.006310  -0.860     0.39    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 964.52  on 713  degrees of freedom
+## Residual deviance: 749.96  on 711  degrees of freedom
+##   (177 observations deleted due to missingness)
+## AIC: 755.96
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>round(exp(coef(l1)),2)</code></pre>
+<pre><code>## (Intercept)     Sexmale         Age 
+##        3.59        0.08        0.99</code></pre>
+<p>Age is not statistically significant determinant of odds of survival.</p>
+<ol start="4" style="list-style-type: decimal">
+<li>Controlling for gender, does passenger class have a statistically significant effect on the odds of survival? If so, what is the magnitude of that effect?</li>
+</ol>
+<pre class="r"><code>l1 &lt;- glm(Survived ~ Sex + Pclass, data=data, family=&quot;binomial&quot;)
+summary(l1)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Survived ~ Sex + Pclass, family = &quot;binomial&quot;, data = data)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.2030  -0.7036  -0.4519   0.6719   2.1599  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)   3.2946     0.2974  11.077   &lt;2e-16 ***
+## Sexmale      -2.6434     0.1838 -14.380   &lt;2e-16 ***
+## Pclass       -0.9606     0.1061  -9.057   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1186.7  on 890  degrees of freedom
+## Residual deviance:  827.2  on 888  degrees of freedom
+## AIC: 833.2
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>round(exp(coef(l1)),2)</code></pre>
+<pre><code>## (Intercept)     Sexmale      Pclass 
+##       26.97        0.07        0.38</code></pre>
+<p>An increase in passenger class by one (i.e. dropping from 1st to 2nd or from 2nd to 3rd) leads to a 62 % decrease in the odds of survival.</p>
+<ol start="5" style="list-style-type: decimal">
+<li>Controlling for gender, estimate the effect of being in the second class relative to first class, and the effect of being in the third relative to first.</li>
+</ol>
+<pre class="r"><code>data$pclass_factor &lt;- factor(data$Pclass)
+levels(data$pclass_factor)</code></pre>
+<pre><code>## [1] &quot;1&quot; &quot;2&quot; &quot;3&quot;</code></pre>
+<pre class="r"><code>l1 &lt;- glm(Survived ~ Sex + pclass_factor, data=data, family=&quot;binomial&quot;)
+summary(l1)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Survived ~ Sex + pclass_factor, family = &quot;binomial&quot;, 
+##     data = data)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.1877  -0.7312  -0.4476   0.6465   2.1681  
+## 
+## Coefficients:
+##                Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)      2.2971     0.2190  10.490  &lt; 2e-16 ***
+## Sexmale         -2.6419     0.1841 -14.351  &lt; 2e-16 ***
+## pclass_factor2  -0.8380     0.2447  -3.424 0.000618 ***
+## pclass_factor3  -1.9055     0.2141  -8.898  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1186.66  on 890  degrees of freedom
+## Residual deviance:  826.89  on 887  degrees of freedom
+## AIC: 834.89
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>round(exp(coef(l1)),2)</code></pre>
+<pre><code>##    (Intercept)        Sexmale pclass_factor2 pclass_factor3 
+##           9.95           0.07           0.43           0.15</code></pre>
+<p>Controlling for gender, passengers in the second class had 57% lower odds of survival than passengers in the first class. Passengers in the third class had 85% lower odds of survival.</p>
+<ol start="6" style="list-style-type: decimal">
+<li>Add fare to the regression you estimated above. Is fare a significant determinant of survival controlling for gender and passenger class? Do you think that if we regressed survival on just gender and fare, fare would be significant? Explain.</li>
+</ol>
+<pre class="r"><code>l1 &lt;- glm(Survived ~ Sex + pclass_factor + Fare, data=data, family=&quot;binomial&quot;)
+summary(l1)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Survived ~ Sex + pclass_factor + Fare, family = &quot;binomial&quot;, 
+##     data = data)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.2395  -0.7285  -0.4470   0.6468   2.1753  
+## 
+## Coefficients:
+##                 Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)     2.147554   0.278322   7.716 1.20e-14 ***
+## Sexmale        -2.624648   0.185217 -14.171  &lt; 2e-16 ***
+## pclass_factor2 -0.736578   0.271056  -2.717  0.00658 ** 
+## pclass_factor3 -1.790329   0.251758  -7.111 1.15e-12 ***
+## Fare            0.001815   0.002102   0.864  0.38779    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1186.66  on 890  degrees of freedom
+## Residual deviance:  826.12  on 886  degrees of freedom
+## AIC: 836.12
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>Controlling for gender and passenger class, fare is not statistically significant determinant of survival.</p>
+<ol start="7" style="list-style-type: decimal">
+<li>As we know from the movie, Jack traveled in the third class and paid 5 pounds (I know that Jack actually won the ticket in poker, but Swen, from whom Jack won the ticket, paid …). Rose traveled in the first class and paid 500 for her ticket (I know that her fiancee, Cal Hockley - Pittsburgh steel tycoon, actually bought the ticket, but …). What is the probability that Jack will survive? What is the probability that Rose will survive?</li>
+</ol>
+<pre class="r"><code>test &lt;- data.frame(Sex=c(&quot;male&quot;, &quot;female&quot;), pclass_factor=c(&quot;3&quot;,&quot;1&quot;), Fare=c(5,500))
+test$pclass_factor &lt;- factor(test$pclass_factor,levels=c(&quot;1&quot;,&quot;2&quot;,&quot;3&quot;))
+test$pred &lt;- predict(l1,test, type=&quot;response&quot;)
+test</code></pre>
+<pre><code>##      Sex pclass_factor Fare       pred
+## 1   male             3    5 0.09463195
+## 2 female             1  500 0.95500851</code></pre>
+<p>Jack’s probability of survival was 0.09 whereas Rose’s probability was 0.96.</p>
 </div>
 
 
