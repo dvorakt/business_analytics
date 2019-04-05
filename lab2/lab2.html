@@ -129,7 +129,7 @@ $(document).ready(function () {
 <li>selecting variables using <code>select()</code></li>
 <li>selecting observations using <code>filter()</code></li>
 <li>sorting data using <code>arrange()</code></li>
-<li>creating new variables</li>
+<li>creating new variables using <code>mutate()</code></li>
 <li>summarizing and plotting data</li>
 </ul>
 </div>
@@ -143,7 +143,7 @@ mydata &lt;- rename(mydata, appl=`Adj. Close`)</code></pre>
 <pre class="r"><code>mydata &lt;- select(mydata, Date, appl)</code></pre>
 </div>
 <div id="sorting-data" class="section level3">
-<h3>4. Sorting data</h3>
+<h3>2. Sorting data</h3>
 <pre class="r"><code>mydata &lt;- arrange(mydata, Date)
 head(mydata)</code></pre>
 <pre><code>## # A tibble: 6 x 2
@@ -157,7 +157,7 @@ head(mydata)</code></pre>
 ## 6 1980-12-19 0.415</code></pre>
 </div>
 <div id="selecting-observations" class="section level3">
-<h3>5. Selecting observations</h3>
+<h3>3. Selecting observations</h3>
 <p>Let’s look at data starting in January 1, 1990. Function <code>filter()</code> keeps only observations that satisfy the condition inside the function.</p>
 <pre class="r"><code>mydata &lt;- filter(mydata, Date&gt;=as.Date(&quot;1990-01-01&quot;))
 head(mydata, n=3)</code></pre>
@@ -169,11 +169,11 @@ head(mydata, n=3)</code></pre>
 ## 3 1990-01-04  1.13</code></pre>
 </div>
 <div id="creating-new-variables" class="section level3">
-<h3>6. Creating new variables</h3>
-<p>Let’s calculate the daily price returns on the GE stock, i.e. the percentage change in the index from previous day’s closing value to today’s closing value. We first create a new variable that equals previous day’s closing value. We use the function <code>lag()</code> which takes the previous observation.</p>
-<pre class="r"><code>mydata$appl_lag &lt;- lag(mydata$appl)</code></pre>
+<h3>4. Creating new variables</h3>
+<p>Let’s calculate the daily price returns on the GE stock, i.e. the percentage change in the index from previous day’s closing value to today’s closing value. We first create a new variable that equals previous day’s closing value. We use the function <code>lag()</code> which takes the previous observation. We can do this using the <code>mutate()</code> function.</p>
+<pre class="r"><code>mydata &lt;- mutate(mydata, appl_lag=lag(appl))</code></pre>
 <p>And then create another new variable called <code>appl_return</code></p>
-<pre class="r"><code>mydata$appl_return &lt;- (mydata$appl-mydata$appl_lag)/mydata$appl_lag*100
+<pre class="r"><code>mydata &lt;- mutate(mydata, appl_return = (appl-appl_lag)/appl_lag*100)
 print(mydata, n=3)</code></pre>
 <pre><code>## # A tibble: 7,058 x 4
 ##   Date        appl appl_lag appl_return
@@ -184,7 +184,7 @@ print(mydata, n=3)</code></pre>
 ## # ... with 7,055 more rows</code></pre>
 </div>
 <div id="summarizing-and-plotting-data" class="section level3">
-<h3>7. Summarizing and plotting data</h3>
+<h3>5. Summarizing and plotting data</h3>
 <pre class="r"><code>summary(mydata$appl_return)</code></pre>
 <pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max.      NA's 
 ## -51.86916  -1.27719   0.00941   0.11258   1.44383  33.21519         1</code></pre>
@@ -212,7 +212,7 @@ head(mydata, n=3)</code></pre>
 </ol>
 </div>
 <div id="turning-daily-data-into-monthly-application-of-lubridate-month-lead-and-filter" class="section level3">
-<h3>8. Turning daily data into monthly (application of <code>lubridate</code>, <code>month()</code>, <code>lead()</code> and <code>filter()</code>)</h3>
+<h3>6. Turning daily data into monthly (application of <code>lubridate</code>, <code>month()</code>, <code>lead()</code> and <code>filter()</code>)</h3>
 <p>Let’s turn our daily APPL data into monthly data by keeping only the last days of each month. This will allow us to calculate monthly returns from close of the previous month to close of this month. We will use function <code>month()</code> to identify the month component of each date. This function is part of the <a href="https://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html"><code>lubridate</code> package</a>.</p>
 <pre class="r"><code>library(lubridate)
 mydata$month=month(mydata$Date)
