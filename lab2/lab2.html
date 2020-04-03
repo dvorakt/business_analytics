@@ -187,6 +187,7 @@ summary {
 <ul>
 <li>selecting variables using <code>select()</code></li>
 <li>selecting observations using <code>filter()</code></li>
+<li>using logical operators <code>==</code>,<code>!=</code>,<code>&amp;</code>,<code>|</code></li>
 <li>sorting data using <code>arrange()</code></li>
 <li>creating new variables using <code>mutate()</code></li>
 <li>summarizing and plotting data</li>
@@ -225,9 +226,9 @@ head(mydata_descending, n=3)</code></pre>
 <pre><code>## # A tibble: 3 x 2
 ##   Date        appl
 ##   &lt;date&gt;     &lt;dbl&gt;
-## 1 2020-04-02  245.
-## 2 2020-04-01  241.
-## 3 2020-03-31  254.</code></pre>
+## 1 2020-04-03  243.
+## 2 2020-04-02  245.
+## 3 2020-04-01  241.</code></pre>
 </div>
 <div id="selecting-observations" class="section level3">
 <h3>3. Selecting observations</h3>
@@ -241,26 +242,31 @@ head(mydata, n=3)</code></pre>
 ## 2 1990-01-03  1.09
 ## 3 1990-01-04  1.09</code></pre>
 </div>
+<div id="using-logical-operators" class="section level3">
+<h3>4. Using logical operators</h3>
+<p>The <code>&gt;=</code> logical operator is pretty straightforward. The syntax for other operators is as follows: <code>==</code> is EQUAL; <code>!=</code> is NOT EQUAL; <code>&amp;</code> is AND; <code>|</code> is OR. For example, the code below will keep rows for March 1, 2010 and when Apple price is between 100 and 101.</p>
+<pre class="r"><code>not_useful_data_frame &lt;- filter(mydata, Date==as.Date(&quot;2010-03-01&quot;) | (appl &gt; 100 &amp; appl&lt;101))</code></pre>
+</div>
 <div id="creating-new-variables" class="section level3">
-<h3>4. Creating new variables</h3>
+<h3>5. Creating new variables</h3>
 <p>Let’s calculate the daily returns on the Apple stock, i.e. the percentage change from the previous day’s adjusted closing price to today’s adjusted closing price. We first create a new variable that equals previous day’s adjusted closing price. We use the function <code>lag()</code> which takes the previous observation. We can do this using the <code>mutate()</code> function.</p>
 <pre class="r"><code>mydata &lt;- mutate(mydata, appl_lag=lag(appl))</code></pre>
 <p>And then create another new variable called <code>appl_return</code></p>
 <pre class="r"><code>mydata &lt;- mutate(mydata, appl_return = (appl-appl_lag)/appl_lag*100)
 print(mydata, n=3)</code></pre>
-<pre><code>## # A tibble: 7,623 x 4
+<pre><code>## # A tibble: 7,624 x 4
 ##   Date        appl appl_lag appl_return
 ##   &lt;date&gt;     &lt;dbl&gt;    &lt;dbl&gt;       &lt;dbl&gt;
 ## 1 1990-01-02  1.08    NA         NA    
 ## 2 1990-01-03  1.09     1.08       0.671
 ## 3 1990-01-04  1.09     1.09       0.333
-## # ... with 7,620 more rows</code></pre>
+## # ... with 7,621 more rows</code></pre>
 </div>
 <div id="summarizing-and-plotting-data" class="section level3">
-<h3>5. Summarizing and plotting data</h3>
+<h3>6. Summarizing and plotting data</h3>
 <pre class="r"><code>summary(mydata$appl_return)</code></pre>
 <pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max.      NA's 
-## -51.86916  -1.23378   0.02247   0.11085   1.41267  33.22783         1</code></pre>
+## -51.86916  -1.23321   0.02235   0.11073   1.41239  33.22783         1</code></pre>
 <p>We see the minimum return was around -51%. Let’s find out when this happened by sorting the data by the return and looking at a few observations:</p>
 <pre class="r"><code>mydata &lt;- arrange(mydata, appl_return)
 head(mydata, n=3)</code></pre>
@@ -285,13 +291,13 @@ head(mydata, n=3)</code></pre>
 </ol>
 </div>
 <div id="turning-daily-data-into-monthly-application-of-lubridate-month-lead-and-filter" class="section level3">
-<h3>6. Turning daily data into monthly (application of <code>lubridate</code>, <code>month()</code>, <code>lead()</code> and <code>filter()</code>)</h3>
+<h3>7. Turning daily data into monthly (application of <code>lubridate</code>, <code>month()</code>, <code>lead()</code> and <code>filter()</code>)</h3>
 <p>Let’s turn our daily APPL data into monthly data by keeping only the last days of each month. This will allow us to calculate monthly returns from close of the previous month to close of this month. We will use function <code>month()</code> to identify the month component of each date. This function is part of the <a href="https://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html"><code>lubridate</code> package</a>.</p>
 <pre class="r"><code>library(lubridate)
 mydata &lt;- mutate(mydata, month=month(Date))
 mydata &lt;- arrange(mydata, Date)
 print(mydata,n=25) #show the first 25 observations</code></pre>
-<pre><code>## # A tibble: 7,623 x 5
+<pre><code>## # A tibble: 7,624 x 5
 ##    Date        appl appl_lag appl_return month
 ##    &lt;date&gt;     &lt;dbl&gt;    &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;
 ##  1 1990-01-02 1.08    NA          NA         1
@@ -319,7 +325,7 @@ print(mydata,n=25) #show the first 25 observations</code></pre>
 ## 23 1990-02-01 0.974    0.985      -1.10      2
 ## 24 1990-02-02 0.992    0.974       1.86      2
 ## 25 1990-02-05 1.01     0.992       2.19      2
-## # ... with 7,598 more rows</code></pre>
+## # ... with 7,599 more rows</code></pre>
 <p>We only want to keep the observations for which the next month is different. We can access the next observation by using the function <code>lead()</code>. Then we will keep only observations for which the next month is different from this month. Also, let’s put the monthly data into a different data frame.</p>
 <pre class="r"><code>monthly &lt;- filter(mydata, month != lead(month))
 monthly &lt;- select(monthly, Date, month, appl)
