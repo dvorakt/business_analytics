@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -145,6 +144,7 @@ summary {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -185,9 +185,9 @@ summary {
 <div id="learning-objectives" class="section level3">
 <h3>Learning objectives</h3>
 <ul>
-<li>using the <code>spread()</code> function to transform a data from long to wide</li>
-<li>using the <code>gather()</code> function to transform a data from wide to long</li>
-<li>advanced reshaping (combining <code>gather()</code>, <code>unite()</code> and <code>spread()</code>)</li>
+<li>using the <code>pivot_wider()</code> function to transform a data from long to wide</li>
+<li>using the <code>pivot_longer()</code> function to transform a data from wide to long</li>
+<li>applications of reshaping including <code>tidycensus()</code></li>
 </ul>
 </div>
 <div id="from-long-to-wide-toy-example" class="section level3">
@@ -201,13 +201,22 @@ long_df</code></pre>
 ## 2    1       b       2
 ## 3    2       a       5
 ## 4    3       b       7</code></pre>
-<p>Suppose that we would like the data to be arranged so that each row represents a date and columns describe what was sold on that date. In other words, we want to <em>spread</em> rows into columns. We can accomplish this using function <code>spread()</code> in <code>tidyr</code> package (a part of <code>tidyverse</code>). The function takes three key arguments. First, it takes the original data. Second, it take the <code>key</code> which is the column in the original data that we want spread. The values of this variable will appear as column headings in the new data frame. The final argument is <code>value</code> which is a column in the original data whose values will be in the cells inside the data frame.</p>
-<pre class="r"><code>wide_df &lt;- spread(data=long_df, key=product, value=dollars )
+<p>Suppose that we would like the data to be arranged so that each row represents a date and columns describe what was sold on that date. In other words, we want to <em>pivot</em> rows into columns. We can accomplish this using function <code>pivot_longer()</code> in <code>tidyr</code> package (a part of <code>tidyverse</code>). The function takes three key arguments. First, it takes the original data. Second, <code>names_from =</code> specifies the column in the original data that we want spread. The values of this variable will appear as column headings in the new data frame.The third agument, <code>values_from =</code> specifies the column in the original data whose values will be in the cells inside the data frame.</p>
+<pre class="r"><code>wide_df &lt;- long_df %&gt;% pivot_wider(names_from = product, values_from = dollars) 
 wide_df</code></pre>
-<pre><code>##   date  a  b
-## 1    1 10  2
-## 2    2  5 NA
-## 3    3 NA  7</code></pre>
+<pre><code>## Warning: `...` is not empty.
+## 
+## We detected these problematic arguments:
+## * `needs_dots`
+## 
+## These dots only exist to allow future extensions and should be empty.
+## Did you misspecify an argument?</code></pre>
+<pre><code>## # A tibble: 3 x 3
+##    date     a     b
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     1    10     2
+## 2     2     5    NA
+## 3     3    NA     7</code></pre>
 <p>We transformed our long data frame into a shorter but wider one. It has the same information, only arranged differently.</p>
 </div>
 <div id="from-wide-to-long-toy-example" class="section level3">
@@ -218,18 +227,29 @@ wide_df</code></pre>
 <pre><code>##   year q1 q2 q3 q4
 ## 1 2014 10 12 13 15
 ## 2 2015 16 17 18 19</code></pre>
-<p>If we wanted to plot the time series we would first need to rearrange the the data so that consecutive observations on GPD are in separate rows. We can accomplish this using the <code>gather()</code> function. It takes several arguments. First, the data that is to be rearranged. Second, <code>value</code> which is the name of the new variable that will contain values. Third, <code>key</code> which is a name of the newly created variable that will contain the names of gathered variables. And finally, the variables to be gathered.</p>
-<pre class="r"><code>long_df &lt;- gather(data=wide_df, value = gdp, key=quarter, q1,q2,q3,q4)
+<p>If we wanted to plot the time series we would first need to rearrange the the data so that consecutive observations on GPD are in separate rows. We can accomplish this using the <code>pivot_longer()</code> function. It takes several arguments. First, the data that is to be rearranged. Second, the list of columns that need to be reshaped. Third argument, <code>names_to =</code> specifies the name of a newly created variable that includes the names of the reshaped columns. Finally, the <code>values_to =</code> argument specifies the name of the new variable that will contain values.</p>
+<pre class="r"><code>long_df &lt;- wide_df %&gt;% pivot_longer(c(&quot;q1&quot;,&quot;q2&quot;,&quot;q3&quot;,&quot;q4&quot;), names_to = &quot;quarter&quot; , values_to = &quot;gdp&quot;)
+long_df &lt;- wide_df %&gt;% pivot_longer(q1:q4, names_to = &quot;quarter&quot; , values_to = &quot;gdp&quot;)
+long_df &lt;- wide_df %&gt;% pivot_longer(-year, names_to = &quot;quarter&quot; , values_to = &quot;gdp&quot;)
 long_df</code></pre>
-<pre><code>##   year quarter gdp
-## 1 2014      q1  10
-## 2 2015      q1  16
-## 3 2014      q2  12
-## 4 2015      q2  17
-## 5 2014      q3  13
-## 6 2015      q3  18
-## 7 2014      q4  15
-## 8 2015      q4  19</code></pre>
+<pre><code>## Warning: `...` is not empty.
+## 
+## We detected these problematic arguments:
+## * `needs_dots`
+## 
+## These dots only exist to allow future extensions and should be empty.
+## Did you misspecify an argument?</code></pre>
+<pre><code>## # A tibble: 8 x 3
+##    year quarter   gdp
+##   &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt;
+## 1  2014 q1         10
+## 2  2014 q2         12
+## 3  2014 q3         13
+## 4  2014 q4         15
+## 5  2015 q1         16
+## 6  2015 q2         17
+## 7  2015 q3         18
+## 8  2015 q4         19</code></pre>
 <p>IN-CLASS EXERCISE 1: Turn the GDP data back from long to wide.</p>
 <p>IN-CLASS EXERCISE 2: The data frame below has information on stock prices for three companies. Put the stock prices for all companies in <em>one</em> column along with a day column and a variable that indicates which company the stock price belongs to.</p>
 <pre class="r"><code>stocks &lt;- data.frame(day=c(1,2), aapl=c(100,110),fb=c(40,30),goog=c(500,600))
@@ -240,16 +260,24 @@ stocks</code></pre>
 </div>
 <div id="from-long-to-wide-real-example" class="section level3">
 <h3>3. From long to wide: real example</h3>
-<p>Suppose we wanted to find out if pancake mix tends to be purchased with syrups, and pasta with pasta sauce. We would like to know which products tend to be in the shopping basket together. Right now our data is organized by transaction. It may be easier for us to work with the data if it is organized by basket instead. Let’s load in the transaction data and merge in product category and brand information.</p>
+<p>Suppose we wanted to find out if pancake mix tends to be purchased with syrups, and pasta with pasta sauce. We would like to know which products tend to be in the shopping basket together. Right now our data is organized by transaction. It may be easier for us to work with the data if it is organized by basket instead. Let's load in the transaction data and merge in product category and brand information.</p>
 <pre class="r"><code>trans &lt;- read_csv(&quot;../dh_transactions.csv&quot;)
 trans &lt;- filter(trans, dollar_sales&gt;0)
 prods &lt;- read_csv(&quot;../dh_product_lookup.csv&quot;)
 prods$upc &lt;- as.character(prods$upc) #need to fix upc
 prods$upc &lt;- ifelse(nchar(prods$upc)==9, paste0(&quot;0&quot;,prods$upc), prods$upc)
 trans &lt;- inner_join(trans, select(prods,upc, commodity, brand), by=&quot;upc&quot;)</code></pre>
-<p>As we know the transaction data contains about 900 different products. Since we are interested which product categories appear together rather than which specific products, let’s simplify the range of products by aggregating up to the product category. For example, if a customer bought two pasta sauces in one basket, we will add up the cost of the two sauces and treat it as one purchase.</p>
-<pre class="r"><code>temp &lt;- trans %&gt;% group_by(household, basket, commodity) %&gt;% summarize(spent = sum(dollar_sales))
-head(temp, n=4)</code></pre>
+<p>As we know the transaction data contains about 900 different products. Since we are interested which product categories appear together rather than which specific products, let's simplify the range of products by aggregating up to the product category. For example, if a customer bought two pasta sauces in one basket, we will add up the cost of the two sauces and treat it as one purchase.</p>
+<pre class="r"><code>temp &lt;- trans %&gt;% group_by(household, basket, commodity) %&gt;% summarize(spent = sum(dollar_sales))</code></pre>
+<pre><code>## `summarise()` regrouping output by 'household', 'basket' (override with `.groups` argument)</code></pre>
+<pre class="r"><code>head(temp, n=4)</code></pre>
+<pre><code>## Warning: `...` is not empty.
+## 
+## We detected these problematic arguments:
+## * `needs_dots`
+## 
+## These dots only exist to allow future extensions and should be empty.
+## Did you misspecify an argument?</code></pre>
 <pre><code>## # A tibble: 4 x 4
 ## # Groups:   household, basket [3]
 ##   household  basket commodity     spent
@@ -259,43 +287,59 @@ head(temp, n=4)</code></pre>
 ## 3         1 1424208 pasta sauce    3.22
 ## 4         1 1512312 pancake mixes  1.99</code></pre>
 <p>We created a data frame which we called <code>temp</code> (for temporary). We also note that the aggregating to product category level did not reduce the number of observations dramatically. This is because buying two kinds of pasta sauces, or two kinds of syrups in one basket is relatively rare.</p>
-<p>Now we are ready to reshape our data set. We start with <code>temp</code> data set. The variable we want to ‘spread’ is <code>commodity</code>, i.e. we want pasta, pasta sauce, pancake mix and syrups to be new variables. And, we want the total spent on these categories to be the values in these variables.</p>
-<pre class="r"><code>basket &lt;- spread(data=temp, key=commodity, value =  spent, fill=0)
+<p>Now we are ready to reshape our data set. We start with <code>temp</code> data set. The variable we want to 'spread' is <code>commodity</code>, i.e. we want pasta, pasta sauce, pancake mix and syrups to be new variables. And, we want the total spent on these categories to be the values in these variables.</p>
+<pre class="r"><code>basket &lt;- temp %&gt;% pivot_wider(names_from=commodity, values_from =  spent, values_fill=0)
 head(basket, n=4)</code></pre>
+<pre><code>## Warning: `...` is not empty.
+## 
+## We detected these problematic arguments:
+## * `needs_dots`
+## 
+## These dots only exist to allow future extensions and should be empty.
+## Did you misspecify an argument?</code></pre>
 <pre><code>## # A tibble: 4 x 6
 ## # Groups:   household, basket [4]
-##   household  basket `pancake mixes` pasta `pasta sauce` syrups
-##       &lt;dbl&gt;   &lt;dbl&gt;           &lt;dbl&gt; &lt;dbl&gt;         &lt;dbl&gt;  &lt;dbl&gt;
-## 1         1  458810            1.79     0          0      1.5 
-## 2         1 1424208            0        0          3.22   0   
-## 3         1 1512312            1.99     0          0      0   
-## 4         1 1518809            0        0          0      1.19</code></pre>
-<p>We see that there are over three million baskets. The first basket in our data had $1.79 worth of pancake mixes, $1.50 worth of syrups and no pasta or pasta sauce. Notice that if a basket did not contain a product category, the value is equal to zero. We set that using the <code>fill=</code> option in the <code>spread()</code> function above. Otherwise, the cell would have NAs in them.</p>
+##   household  basket `pancake mixes` syrups `pasta sauce` pasta
+##       &lt;dbl&gt;   &lt;dbl&gt;           &lt;dbl&gt;  &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;
+## 1         1  458810            1.79   1.5           0        0
+## 2         1 1424208            0      0             3.22     0
+## 3         1 1512312            1.99   0             0        0
+## 4         1 1518809            0      1.19          0        0</code></pre>
+<p>We see that there are over three million baskets. The first basket in our data had $1.79 worth of pancake mixes, $1.50 worth of syrups and no pasta or pasta sauce. Notice that if a basket did not contain a product category, the value is equal to zero. We set that using the <code>values_fill=</code> option in the <code>pivot_wider()</code> function above. Otherwise, the cell would have NAs in them.</p>
 </div>
 <div id="working-with-wide-data" class="section level3">
 <h3>4. Working with wide data</h3>
-<p>Now that we have the data at the basket level, we can see whether different product categories appear together. Since at this point we are not interested in the value of sales, but rather whether or not a product category is in the basket, let’s create indicator variables for each product category.</p>
+<p>Now that we have the data at the basket level, we can see whether different product categories appear together. Since at this point we are not interested in the value of sales, but rather whether or not a product category is in the basket, let's create indicator variables for each product category.</p>
 <pre class="r"><code>basket &lt;- basket %&gt;%
   mutate(pancakey = ifelse(`pancake mixes` &gt; 0,&quot;yes&quot;,&quot;no&quot;),
          pastay = ifelse(pasta &gt; 0,&quot;yes&quot;,&quot;no&quot;),
          saucey = ifelse(`pasta sauce` &gt; 0,&quot;yes&quot;,&quot;no&quot;),
          syrupy = ifelse(syrups &gt; 0,&quot;yes&quot;,&quot;no&quot;))
 head(basket, n=4)</code></pre>
+<pre><code>## Warning: `...` is not empty.
+## 
+## We detected these problematic arguments:
+## * `needs_dots`
+## 
+## These dots only exist to allow future extensions and should be empty.
+## Did you misspecify an argument?</code></pre>
 <pre><code>## # A tibble: 4 x 10
 ## # Groups:   household, basket [4]
-##   household basket `pancake mixes` pasta `pasta sauce` syrups pancakey
-##       &lt;dbl&gt;  &lt;dbl&gt;           &lt;dbl&gt; &lt;dbl&gt;         &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;   
-## 1         1 4.59e5            1.79     0          0      1.5  yes     
-## 2         1 1.42e6            0        0          3.22   0    no      
-## 3         1 1.51e6            1.99     0          0      0    yes     
-## 4         1 1.52e6            0        0          0      1.19 no      
-## # ... with 3 more variables: pastay &lt;chr&gt;, saucey &lt;chr&gt;, syrupy &lt;chr&gt;</code></pre>
-<p>Let’s use the <code>crosstab()</code> function from the <code>descr</code> package to see the association of different product categories.</p>
+##   household basket `pancake mixes` syrups `pasta sauce` pasta pancakey pastay
+##       &lt;dbl&gt;  &lt;dbl&gt;           &lt;dbl&gt;  &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt; 
+## 1         1 4.59e5            1.79   1.5           0        0 yes      no    
+## 2         1 1.42e6            0      0             3.22     0 no       no    
+## 3         1 1.51e6            1.99   0             0        0 yes      no    
+## 4         1 1.52e6            0      1.19          0        0 no       no    
+## # ... with 2 more variables: saucey &lt;chr&gt;, syrupy &lt;chr&gt;</code></pre>
+<p>Let's use the <code>crosstab()</code> function from the <code>descr</code> package to see the association of different product categories.</p>
 <pre class="r"><code>library(descr)
-crosstab(basket$saucey, basket$pastay, prop.t = TRUE, plot = FALSE)</code></pre>
+crosstab(basket$saucey, basket$pastay, prop.t = TRUE, prop.c = TRUE, prop.r=TRUE, plot = FALSE)</code></pre>
 <pre><code>##    Cell Contents 
 ## |-------------------------|
 ## |                   Count | 
+## |             Row Percent | 
+## |          Column Percent | 
 ## |           Total Percent | 
 ## |-------------------------|
 ## 
@@ -304,12 +348,17 @@ crosstab(basket$saucey, basket$pastay, prop.t = TRUE, plot = FALSE)</code></pre>
 ## basket$saucey         no       yes     Total
 ## --------------------------------------------
 ## no               631203   1139818   1771021 
+##                    35.6%     64.4%     53.4%
+##                    46.5%     58.2%          
 ##                    19.0%     34.4%          
 ## --------------------------------------------
 ## yes              725120    818343   1543463 
+##                    47.0%     53.0%     46.6%
+##                    53.5%     41.8%          
 ##                    21.9%     24.7%          
 ## --------------------------------------------
 ## Total           1356323   1958161   3314484 
+##                    40.9%     59.1%          
 ## ============================================</code></pre>
 <p>We see that pasta was in 1,958,161 baskets, and of those baskets 818,343 also had sauce in it. So, given that a basket has pasta, the chances that it also has sauce is about 42%.</p>
 <p>IN-CLASS EXERCISE 3: Is Buddy the Elf out there? Given that a basket has pasta, what are the chances that it also has syrup?</p>
@@ -317,10 +366,15 @@ crosstab(basket$saucey, basket$pastay, prop.t = TRUE, plot = FALSE)</code></pre>
 </div>
 <div id="from-long-to-wide-another-example" class="section level3">
 <h3>5. From long to wide: another example</h3>
-<p>Sometimes reshaping data is necessary to create a good visualization. For example, in our transaction data we know that some customers used coupons. Suppose we want to compare average prices when coupon was used to average prices when coupon was not used. Let’s summarize the transactions data by upc code and whether or not a coupon was used. While collapsing/summarizing the data we will calculate the average price for each upc code and whether or not a coupon was used.</p>
+<p>Sometimes reshaping data is necessary to create a good visualization. For example, in our transaction data we know that some customers used coupons. Suppose we want to compare average prices when coupon was used to average prices when coupon was not used. Let's summarize the transactions data by upc code and whether or not a coupon was used. While collapsing/summarizing the data we will calculate the average price for each upc code and whether or not a coupon was used.</p>
 <pre class="r"><code>prods &lt;- trans %&gt;% group_by(upc, coupon) %&gt;% summarize(av_price=mean(dollar_sales/units))</code></pre>
+<pre><code>## `summarise()` regrouping output by 'upc' (override with `.groups` argument)</code></pre>
 <p>It is possible that not all products had a coupon. If a product had a coupon it would be in our data set twice, if it did not have a coupon it would be there only once. So we can use <code>mutate()</code> to calculate how many times each upc code is in the data and filter out those that appear only once.</p>
-<pre class="r"><code>prods &lt;- prods %&gt;% group_by(upc) %&gt;% mutate(count=n()) %&gt;% filter(count==2) %&gt;% select(-count)
+<pre class="r"><code>prods &lt;- prods %&gt;% 
+  group_by(upc) %&gt;%
+  mutate(count=n()) %&gt;% 
+  filter(count==2) %&gt;% 
+  select(-count)
 head(prods, n=4)</code></pre>
 <pre><code>## # A tibble: 4 x 3
 ## # Groups:   upc [2]
@@ -331,9 +385,16 @@ head(prods, n=4)</code></pre>
 ## 3 1330052501      0    0.690
 ## 4 1330052501      1    0.328</code></pre>
 <p>Right now we have a data set where each product appears twice, once with average price when a coupon was used (<code>coupon=1</code>) and once an average price when a coupon was not used (<code>coupon=0</code>). Suppose that we want to plot average prices with coupon against average prices with no coupon. To do this we would need to reshape the data so that each product appears in the data only once, but have two new columns - one that shows no coupon price and one with coupon price.</p>
-<pre class="r"><code>prods &lt;-  spread(data=prods, key=coupon, value=av_price)
+<pre class="r"><code>prods &lt;-  prods %&gt;% pivot_wider(names_from = coupon, values_from = av_price)
 prods &lt;- rename(prods, coupon_price = `1`, nocoupon_price = `0`)
 head(prods, n=4)</code></pre>
+<pre><code>## Warning: `...` is not empty.
+## 
+## We detected these problematic arguments:
+## * `needs_dots`
+## 
+## These dots only exist to allow future extensions and should be empty.
+## Did you misspecify an argument?</code></pre>
 <pre><code>## # A tibble: 4 x 3
 ## # Groups:   upc [4]
 ##   upc        nocoupon_price coupon_price
@@ -350,7 +411,7 @@ head(prods, n=4)</code></pre>
 </div>
 <div id="advanced-reshaping" class="section level3">
 <h3>6. Advanced reshaping</h3>
-<p>Suppose you had the following data on population <em>and</em> GDP for two countries in two years. Reshape this data so that each country’s population and each country’s GDP are in separate columns, and each year is in a separate row. Give the new variables informative names.</p>
+<p>Suppose you had the following data on population <em>and</em> GDP for two countries in two years. Reshape this data so that each country's population and each country's GDP are in separate columns, and each year is in a separate row. Give the new variables informative names.</p>
 <pre class="r"><code>data &lt;- data.frame(year=c(1,1,2,2), country=c(&quot;a&quot;,&quot;b&quot;,&quot;a&quot;,&quot;b&quot;), pop=c(1,2,3,4), gdp=c(5,6,7,8))
 data</code></pre>
 <pre><code>##   year country pop gdp
@@ -358,41 +419,66 @@ data</code></pre>
 ## 2    1       b   2   6
 ## 3    2       a   3   7
 ## 4    2       b   4   8</code></pre>
-<p>The problem we have is that there are two variables that have <code>values=</code>. In the end we want columns that indicate population in country a (say <code>a_pop</code>), population in country b (say <code>b_pop</code>), GDP in country a (say <code>a_gdp</code>), etc. We solve this in three stages. First, we <code>gather</code> the <code>pop</code> and <code>gdp</code> columns to make it long, we call the variable that has either pop or GDP <code>stat</code>. Second, we <code>unite</code> the <code>country</code> and <code>stat</code> variables into one called <code>country_stat</code>. Finally, we <code>spread</code> the <code>country_stat</code> variable to make the data wide again.</p>
-<pre class="r"><code>temp &lt;- gather(data, key=stat, value=value, pop, gdp)
-temp</code></pre>
-<pre><code>##   year country stat value
-## 1    1       a  pop     1
-## 2    1       b  pop     2
-## 3    2       a  pop     3
-## 4    2       b  pop     4
-## 5    1       a  gdp     5
-## 6    1       b  gdp     6
-## 7    2       a  gdp     7
-## 8    2       b  gdp     8</code></pre>
-<pre class="r"><code>temp &lt;- unite(temp, country_stat, country, stat)
-temp</code></pre>
-<pre><code>##   year country_stat value
-## 1    1        a_pop     1
-## 2    1        b_pop     2
-## 3    2        a_pop     3
-## 4    2        b_pop     4
-## 5    1        a_gdp     5
-## 6    1        b_gdp     6
-## 7    2        a_gdp     7
-## 8    2        b_gdp     8</code></pre>
-<pre class="r"><code>data_wide &lt;- spread(temp, key=country_stat, value=value)
+<p>Since we have two sets of values that we would like to spread, <code>pop</code> and <code>gdp</code>, we can specify that the values come from two columns.</p>
+<pre class="r"><code>data_wide &lt;- data %&gt;% pivot_wider(names_from=country, values_from =c(&quot;pop&quot;, &quot;gdp&quot;))
 data_wide</code></pre>
-<pre><code>##   year a_gdp a_pop b_gdp b_pop
-## 1    1     5     1     6     2
-## 2    2     7     3     8     4</code></pre>
+<pre><code>## Warning: `...` is not empty.
+## 
+## We detected these problematic arguments:
+## * `needs_dots`
+## 
+## These dots only exist to allow future extensions and should be empty.
+## Did you misspecify an argument?</code></pre>
+<pre><code>## # A tibble: 2 x 5
+##    year pop_a pop_b gdp_a gdp_b
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     1     1     2     5     6
+## 2     2     3     4     7     8</code></pre>
+<p>If we want the names to be informative, we can use the <code>names_glue=</code> option.</p>
+<pre class="r"><code>data_wide &lt;- data %&gt;% pivot_wider(names_from = country, values_from = c(&quot;pop&quot;, &quot;gdp&quot;),
+                                  names_glue=&quot;{.value}_of_country_{country}&quot;)
+data_wide</code></pre>
+<pre><code>## # A tibble: 2 x 5
+##    year pop_of_country_a pop_of_country_b gdp_of_country_a gdp_of_country_b
+##   &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+## 1     1                1                2                5                6
+## 2     2                3                4                7                8</code></pre>
+</div>
+<div id="another-application-of-reshaping" class="section level3">
+<h3>7. Another application of reshaping</h3>
+<p>Package <code>tidycensus</code> makes accessing Census data very easy. You can specify which variables you need, for which years, for what geographies (zip codes, congressional districts, counties, states, etc.). You need to request your own API key <a href="http://api.census.gov/data/key_signup.html">here</a>.</p>
+<pre class="r"><code>library(tidycensus)
+census_api_key(&quot;your Census API key&quot;)
+
+#you need to know which Census program you want to use
+#American Community Survey (ACS) has the most comprehensive demographic, social and economic statistics 
+#function load_variables let's us browse available variables, let's use ACS's 5-year estimates
+vars &lt;- load_variables(2018, &quot;acs5/profile&quot;)
+#another way to browse available variables is look through data profile variables 
+#https://api.census.gov/data/2017/acs/acs5/profile/groups.html
+
+#function get_acs() actually gets the data
+acs &lt;- get_acs(geography = &quot;county&quot;, 
+             variables = c(&quot;DP05_0001&quot;, &quot;DP05_0009&quot;, &quot;DP05_0037&quot;,&quot;DP03_0062&quot;), 
+             year = 2018)
+head(acs)</code></pre>
+<p>As we can see, <code>get_acs</code> gives us each variable value on a separate row. In most analyses we probably need each variable in a separate column - having one row for each county.</p>
+<pre class="r"><code>acs_reshaped &lt;- acs %&gt;%
+  select(NAME,variable, estimate) %&gt;%
+  pivot_wider(values_from = estimate,names_from = variable) %&gt;%
+  rename(popuplation=DP05_0001,
+         pop20_24=DP05_0009,
+         pop_white =DP05_0037,
+         med_income = DP03_0062) 
+
+head(acs_reshaped)</code></pre>
 <hr />
 <hr />
 </div>
 <div id="exercises" class="section level3">
 <h3>Exercises:</h3>
 <ol style="list-style-type: decimal">
-<li>Suppose you have the following data on population for two countries for two years. Reshape this data so that each country’s population is in a separate column, and each year is on just one row.</li>
+<li>Suppose you have the following data on population for two countries for two years. Reshape this data so that each country's population is in a separate column, and each year is on just one row.</li>
 </ol>
 <pre class="r"><code>data &lt;- data.frame(year=c(1,1,2,2), country=c(&quot;a&quot;,&quot;b&quot;,&quot;a&quot;,&quot;b&quot;), pop=c(1,2,3,4))
 data</code></pre>
@@ -402,7 +488,7 @@ data</code></pre>
 ## 3    2       a   3
 ## 4    2       b   4</code></pre>
 <ol start="2" style="list-style-type: decimal">
-<li><p>Convert your result from above back to a long data frame,i.e. back to its original shape.</p></li>
+<li><p>Convert your result from above back to a long data frame,i.e. back to its original shape.</p></li>
 <li><p>Run the code below. Would you say that the resulting data frame is wide or long?</p></li>
 </ol>
 <pre class="r"><code>#put tickers of a bunch of stocks in a vector
@@ -417,7 +503,12 @@ for (i in 1:length(stocks)) {
   #append temp to data, this will gradually stack data for each stock on top of each other
   data &lt;- bind_rows(data,temp) 
 }
-data &lt;- filter(data, Date&gt;as.Date(&quot;2003-01-01&quot;)) #trim the time frame</code></pre>
+
+#an alternative online source of stock data
+#temp &lt;- read_csv(paste0(&quot;https://query1.finance.yahoo.com/v7/finance/download/&quot;,stocks[i],&quot;?period1=1&amp;period2=2000000000&amp;interval=1d&amp;events=history&quot;),
+#                 col_types=cols(Date=col_date(),
+#                                `Adj Close`=col_double()))
+#data &lt;- filter(data, Date&gt;as.Date(&quot;2003-01-01&quot;)) #trim the time frame</code></pre>
 <ol start="4" style="list-style-type: decimal">
 <li><p>Use the above data frame to create a time plot of stock prices of all four companies in one graph. Use a log scale on the y-axis. (Hint: You can map the color aesthetic to <code>stock</code>.)</p></li>
 <li><p>Turn your data from long to wide with stock prices for each company as separate columns. Do you have any missing values? Why?</p></li>
